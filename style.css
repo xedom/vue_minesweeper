@@ -1,0 +1,88 @@
+* {
+  background-color: rgb(92, 92, 92);
+  color: #eee;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+#app {
+  width: 1080px;
+}
+
+.boxes {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+
+.box {
+  height: 30px;
+  width: 30px;
+  border: rgb(0, 0, 0) solid 3px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgb(31, 31, 31);
+}
+
+.box.covered {
+  background-color: rgb(110, 110, 110);
+  cursor: default;
+}
+
+.box:hover {
+  background-color: rgb(31, 31, 31);
+  color: #eee;
+  cursor: default;
+}
+
+.box.covered:hover {
+  background-color: rgb(214, 177, 12);
+  color:rgb(31, 31, 31);
+  cursor: pointer;
+}
+
+.box.bomb {
+  background-color: rgb(181, 0, 48);
+}
+
+.box.flagged {
+  background-color: rgb(12, 116, 214);
+}
+
+/* ------------------------------------------- */
+
+.unselectable {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+@keyframes spinanimation {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(0.3); }
+  100% { transform: scale(0.9); }
+}
+
+.spinners {
+  display: flex;
+}
+
+.spinner {
+  height: 1.5em;
+  width: 1.5em;
+  margin: .2em;
+  background-color: #eee;
+  border-radius: 50%;
+  animation: 1.5s linear infinite spinanimation;
+}
+
+.spinners.hide {
+  display: none;
+}
