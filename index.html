@@ -11,32 +11,40 @@
     <link rel="stylesheet" href="style.css">
     <script defer src="testmaps.js"></script>
     <script defer src="main.js"></script>
-
     <title>Minesweeper</title>
 </head>
 <body>
-<main>
-  <h1>Minesweeper</h1>
-    
   <div id="app">
+    <h1>Minesweeper</h1>
+    <div class="stats">
+      <p><b>Gamestatus:</b> {{ gameOver ? "Game Over" : "Playing" }}</p>
+      <p><b>Bombs:</b> {{getFlaggetBoxesCount()}} / {{getBombsCount()}}</p>
+      <p><b>Time:</b> {{playTime}}</p>
+    </div>
     <div class="boxes unselectable">
       <div 
         v-bind:title="box.id" 
-        v-bind:class="{box, covered: box.covered, flagged: box.flag, bomb: box.value == 'x' && !box.covered}" 
+        v-bind:class="{box, covered: box.covered, flagged: box.flagged, bomb: box.value == 'x' && !box.covered}" 
         v-for="box in boxes" 
         v-on:click="onClick(box.id)"
         v-on:click.right="onClickRight(box.id)"
         >
         {{box.covered ? "" : box.value}}
       </div>
-      <!-- <div v-bind:class="'box'" v-for="box in boxes" v-on:click="onClick(box.id)">
-        {{box.value}}
-      </div> -->
     </div>
+    <footer>
+      <div class="instructions">
+        <h3>Commands:</h3>
+        <p><b>Left Click</b>: uncover box / uncover adjacent boxes</p>
+        <p><b>Right Click</b>: flag box</p>
+      </div>
+      <div class="controls">
+        <input type="button" value="New Game" v-on:click="onNewGame()">
+        <input type="button" value="Retry" v-on:click="onRetry()">
+      </div>
+    </footer>
 
   </div>
 
-
-</main>
 </body>
 </html>

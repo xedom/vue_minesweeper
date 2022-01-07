@@ -1,47 +1,99 @@
+:root {
+  --accent: rgb(214, 150, 12);
+  --dark1: #151515;
+  --dark2: #333;
+  --light1: #eee;
+  --light2: #707070;
+}
+
 * {
-  background-color: rgb(92, 92, 92);
-  color: #eee;
+  background-color: var(--dark1);
+  color: var(--light1);
   margin: 0;
   padding: 0;
   font-family: sans-serif;
 }
 
 #app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+}
+
+.stats {
+  margin: 0.5em;
+  display: flex;
+}
+
+.stats p {
+  padding: 0 1em;
+}
+
+footer {
   width: 1080px;
+  display: flex;
+  justify-content: space-between;
+}
+
+footer .instructions {
+  display: flex;
+  flex-direction: column;
+}
+
+footer .controls input[type=button] {
+  border: none;
+  margin: 0;
+  padding: 0.5em 2em;
+  background-color: var(--accent);
+  color: var(--dark1);
+  font-weight: bold;
+  cursor: pointer;
+  font-family: sans-serif;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+footer .controls input[type=button]:hover {
+  /* opacity: 90%; */
+  background-color: var(--dark2);
+  color: var(--accent);
 }
 
 .boxes {
   display: flex;
   flex-wrap: wrap;
+  width: 1080px;
+  padding: 1em 0;
 }
-
-
 
 .box {
   height: 30px;
   width: 30px;
-  border: rgb(0, 0, 0) solid 3px;
+  border: var(--dark1) solid 3px;
+  border-radius: 5px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background-color: rgb(31, 31, 31);
+  background-color: #333;
 }
 
 .box.covered {
-  background-color: rgb(110, 110, 110);
+  background-color: var(--light2);
   cursor: default;
 }
 
 .box:hover {
-  background-color: rgb(31, 31, 31);
-  color: #eee;
+  background-color: var(--dark1);
+  color: var(--light1);
   cursor: default;
 }
 
 .box.covered:hover {
-  background-color: rgb(214, 177, 12);
+  background-color: rgb(214, 150, 12);
   color:rgb(31, 31, 31);
   cursor: pointer;
 }
@@ -54,35 +106,10 @@
   background-color: rgb(12, 116, 214);
 }
 
-/* ------------------------------------------- */
-
 .unselectable {
   -moz-user-select: -moz-none;
   -khtml-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-@keyframes spinanimation {
-  0% { transform: scale(0.9); }
-  50% { transform: scale(0.3); }
-  100% { transform: scale(0.9); }
-}
-
-.spinners {
-  display: flex;
-}
-
-.spinner {
-  height: 1.5em;
-  width: 1.5em;
-  margin: .2em;
-  background-color: #eee;
-  border-radius: 50%;
-  animation: 1.5s linear infinite spinanimation;
-}
-
-.spinners.hide {
-  display: none;
 }
