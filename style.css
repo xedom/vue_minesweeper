@@ -53,6 +53,7 @@ footer .controls input[type=button] {
   font-family: sans-serif;
   border-radius: 5px;
   font-size: 1em;
+  transition: background-color .2s;
 }
 
 footer .controls input[type=button]:hover {
@@ -79,6 +80,7 @@ footer .controls input[type=button]:hover {
   justify-content: center;
 
   background-color: #333;
+  transition: background-color .2s;
 }
 
 .box.covered {

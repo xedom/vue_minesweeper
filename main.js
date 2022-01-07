@@ -90,9 +90,11 @@ const app = new Vue({
   },
   created: function () {
     this.startTimer();
+    this.keyHandler();
   },
   methods: {
     startTimer() {
+      if (this.timer != null) return;
       this.timer = setInterval(() => {
         this.playTime = this.getPlaytime();
       }, 100)
@@ -151,6 +153,12 @@ const app = new Vue({
       })
     },
 
+    coverBombs() {
+      this.boxes.forEach(box => {
+        if (box.value == "x") box.covered = true;
+      })
+    },
+
     uncoverArea(_id) {
       const ids = this.calcAreaToOpen(_id);
 
@@ -185,6 +193,7 @@ const app = new Vue({
       this.uncoverBombs();
 
       clearInterval(this.timer);
+      this.timer = null;
     },
 
     onClick(_id) {
@@ -232,6 +241,14 @@ const app = new Vue({
       this.startTimer();
       this.coverAllBoxes();
     },
-
+    keyHandler() {
+      window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'z') {
+          this.coverBombs();
+          this.gameOver = false;
+          this.startTimer();
+        }
+      });
+    },
   }
 })
