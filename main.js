@@ -74,7 +74,8 @@ function getMap(gamemap = null) {
     id: id++,
     value: x,
     covered: true,
-    flagged: false
+    flagged: false,
+    gameStatus: null
   }));
   return gamemap;
 }
@@ -89,8 +90,9 @@ const app = new Vue({
     timer: null
   },
   created: function () {
-    this.startTimer();
+    // this.startTimer();
     this.keyHandler();
+    this.gameStatus = "Waiting";
   },
   methods: {
     startTimer() {
@@ -191,14 +193,32 @@ const app = new Vue({
     gameOverHandler() {
       this.gameOver = true;
       this.uncoverBombs();
+      this.gameStatus = "Game Over";
 
       clearInterval(this.timer);
       this.timer = null;
     },
 
+    checkWin() {
+      const notBombCount = this.boxes.filter(box => box.value != "x").length;
+      const uncoveredBoxesCount = this.boxes.filter(box => !box.covered).length;
+
+      if (notBombCount == uncoveredBoxesCount) {
+        this.gameOver = true;
+        this.uncoverBombs();
+        this.gameStatus = "Won";
+
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+    },
+
     onClick(_id) {
       if (this.gameOver) return;
+      
+      this.gameStatus = "Playing";
 
+      this.startTimer();
       const box = this.boxes[_id];
 
       // ignore if the box is flagged
@@ -215,6 +235,8 @@ const app = new Vue({
 
       // just uncover the box
       box.covered = false;
+
+      this.checkWin();
     },
 
     onClickRight(_id) {
@@ -241,12 +263,14 @@ const app = new Vue({
       this.startTimer();
       this.coverAllBoxes();
     },
+
     keyHandler() {
       window.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === 'z') {
           this.coverBombs();
           this.gameOver = false;
           this.startTimer();
+          this.gameStatus = "Playing";
         }
       });
     },

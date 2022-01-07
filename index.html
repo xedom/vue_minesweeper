@@ -17,7 +17,7 @@
   <div id="app">
     <h1>Minesweeper</h1>
     <div class="stats">
-      <p><b>Gamestatus:</b> {{ gameOver ? "Game Over" : "Playing" }}</p>
+      <p><b>Gamestatus:</b> {{ gameStatus }}</p>
       <p><b>Bombs:</b> {{getFlaggetBoxesCount()}} / {{getBombsCount()}}</p>
       <p><b>Time:</b> {{playTime}}</p>
     </div>
