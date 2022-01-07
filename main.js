@@ -18,8 +18,9 @@ function calcAround(_id) {
   return toCheck;
 }
 
-function genMap(difficulty = 2) {
+function genMap(difficulty = 2, clickedBoxID = null) {
   let maparray = [];
+  const clickedBoxIDs = calcAround(clickedBoxID);
 
   if (difficulty == 2) {
     const rows = 16;
@@ -36,7 +37,7 @@ function genMap(difficulty = 2) {
         let randomID = Math.random()*rows*cols;
         randomID = Math.round(randomID);
 
-        if (maparray[randomID] == 0) {
+        if (maparray[randomID] == 0 && !clickedBoxIDs.includes(randomID)) {
           maparray[randomID] = 9;
           break;
         }
@@ -56,12 +57,13 @@ function genMap(difficulty = 2) {
     }
 
   }
+  
 
   return maparray;
 }
 
-function getMap(gamemap = null) {
-  if (gamemap == null) gamemap = genMap();
+function getMap(gamemap = null, clickedBoxID = null) {
+  if (gamemap == null) gamemap = genMap(2, clickedBoxID);
 
   gamemap = gamemap.map(x => {
     if (x == 0) return ""
@@ -75,7 +77,6 @@ function getMap(gamemap = null) {
     value: x,
     covered: true,
     flagged: false,
-    gameStatus: null
   }));
   return gamemap;
 }
@@ -83,16 +84,33 @@ function getMap(gamemap = null) {
 const app = new Vue({
   el: '#app',
   data: {
-    boxes: getMap(map001),
+    boxes: null,
     gameOver: false,
     startTime: Date.now(),
     playTime: 0,
-    timer: null
+    timer: null,
+    placeHolderMap: true
   },
   created: function () {
     // this.startTimer();
     this.keyHandler();
     this.gameStatus = "Waiting";
+    if (false) {
+      this.boxes = getMap(map001);
+      this.placeHolderMap = false;
+    } else {
+      this.boxes = [];
+
+      for(let i = 0; i < 30*16; i++) {
+        this.boxes.push({ 
+          id: i,
+          value: 0,
+          covered: true,
+          flagged: false,
+        });
+      }
+      this.placeHolderMap = true;
+    }
   },
   methods: {
     startTimer() {
@@ -218,6 +236,11 @@ const app = new Vue({
       
       this.gameStatus = "Playing";
 
+      if (this.placeHolderMap) {
+        this.boxes = getMap(null, _id);
+        this.placeHolderMap = false;
+      }
+
       this.startTimer();
       const box = this.boxes[_id];
 
@@ -250,8 +273,20 @@ const app = new Vue({
       this.startTime = Date.now();
       this.playTime = 0;
       this.timer = null;
+      
+      this.boxes = [];
 
-      this.boxes = getMap();
+      for(let i = 0; i < 30*16; i++) {
+        this.boxes.push({ 
+          id: i,
+          value: 0,
+          covered: true,
+          flagged: false,
+        });
+      }
+      this.placeHolderMap = true;
+
+      // this.boxes = getMap();
     },
 
     onRetry() {

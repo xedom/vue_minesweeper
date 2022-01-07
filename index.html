@@ -21,6 +21,7 @@
       <p><b>Bombs:</b> {{getFlaggetBoxesCount()}} / {{getBombsCount()}}</p>
       <p><b>Time:</b> {{playTime}}</p>
     </div>
+
     <div class="boxes unselectable">
       <div 
         v-bind:title="box.id" 
@@ -32,6 +33,7 @@
         {{box.covered ? "" : box.value}}
       </div>
     </div>
+
     <footer>
       <div class="instructions">
         <h3>Commands:</h3>
@@ -44,6 +46,10 @@
         <input type="button" value="Retry" v-on:click="onRetry()">
       </div>
     </footer>
+
+    <!-- <div class="boxes unselectable">
+      <div class="box" v-for="box in boxes"> {{box.value}} </div>
+    </div> -->
 
   </div>
 
