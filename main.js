@@ -2,85 +2,6 @@ document.oncontextmenu = function() {
   return false;
 }
 
-function calcAround(_id) {
-  const row = Math.floor(_id / 30);
-  const col = _id % 30;
-
-  let toCheck = [
-    [row-1,col-1],[row-1,col],[row-1,col+1],
-    [row  ,col-1],[row  ,col],[row  ,col+1],
-    [row+1,col-1],[row+1,col],[row+1,col+1],
-  ];
-  toCheck = toCheck.filter(coord => coord[0] >=0 && coord[0] <16);
-  toCheck = toCheck.filter(coord => coord[1] >=0 && coord[1] <30);
-  toCheck = toCheck.map(coord => (30*coord[0])+coord[1]);
-
-  return toCheck;
-}
-
-function genMap(difficulty = 2, clickedBoxID = null) {
-  let maparray = [];
-  const clickedBoxIDs = calcAround(clickedBoxID);
-
-  if (difficulty == 2) {
-    const rows = 16;
-    const cols = 30;
-
-    // initializing the map
-    for (let i = 0; i < rows*cols; i++) {
-      maparray.push(0);
-    }
-
-    // adding bombs to the map
-    for (let i = 0; i < 99; i++) {
-      while (true) {
-        let randomID = Math.random()*rows*cols;
-        randomID = Math.round(randomID);
-
-        if (maparray[randomID] == 0 && !clickedBoxIDs.includes(randomID)) {
-          maparray[randomID] = 9;
-          break;
-        }
-      }
-    }
-
-    // adding bomb counter around the bombs
-    for (let i = 0; i < rows*cols; i++) {
-      if (maparray[i] == 9) continue;
-      let aroundBoxes = calcAround(i);
-      let bombCount = 0;
-
-      aroundBoxes.forEach(id => {
-        if (maparray[id] == 9) bombCount++;
-      })
-      maparray[i] = bombCount;
-    }
-
-  }
-  
-
-  return maparray;
-}
-
-function getMap(gamemap = null, clickedBoxID = null) {
-  if (gamemap == null) gamemap = genMap(2, clickedBoxID);
-
-  gamemap = gamemap.map(x => {
-    if (x == 0) return ""
-    if (x == 9) return "x"
-    return x.toString();
-  })
-
-  let id = 0;
-  gamemap = gamemap.map(x => ({ 
-    id: id++,
-    value: x,
-    covered: true,
-    flagged: false,
-  }));
-  return gamemap;
-}
-
 const app = new Vue({
   el: '#app',
   data: {
@@ -89,35 +10,76 @@ const app = new Vue({
     startTime: Date.now(),
     playTime: 0,
     timer: null,
-    placeHolderMap: true
+    placeHolderMap: true,
+    difficulty: "expert",
+    height: 0,
+    width: 0,
+    mines: 0,
   },
   created: function () {
     // this.startTimer();
     this.keyHandler();
     this.gameStatus = "Waiting";
-    if (false) {
-      this.boxes = getMap(map001);
-      this.placeHolderMap = false;
-    } else {
-      this.boxes = [];
 
-      for(let i = 0; i < 30*16; i++) {
-        this.boxes.push({ 
-          id: i,
-          value: 0,
-          covered: true,
-          flagged: false,
-        });
-      }
-      this.placeHolderMap = true;
+    // setting default difficulty
+    this.difficulty = "expert";
+    this.height = 16;
+    this.width = 30;
+    this.mines = 99;
+
+    // placeholder
+    this.boxes = [];
+
+    for(let i = 0; i < this.height*this.width; i++) {
+      this.boxes.push({ 
+        id: i,
+        value: 0,
+        covered: true,
+        flagged: false,
+      });
     }
+    this.placeHolderMap = true;
   },
   methods: {
+    getBox(_id, prop) {
+      console.log(_id);
+      console.log(prop);
+    },
+
     startTimer() {
       if (this.timer != null) return;
       this.timer = setInterval(() => {
         this.playTime = this.getPlaytime();
       }, 100)
+    },
+
+    setDifficultySettings() {
+      if (this.difficulty == "beginner") {
+        this.width = 8;
+        this.height = 8
+        this.mines = 10;
+      } else if (this.difficulty == "intermediate") {
+        this.width = 16;
+        this.height = 16
+        this.mines = 40;
+      } else if (this.difficulty == "expert") {
+        this.width = 30;
+        this.height = 16
+        this.mines = 99;
+      }
+      // else if (this.difficulty == "custom") {
+      //   this.width =
+      // }
+    },
+
+    onChangeDifficulty(e) {
+      let curr_difficulty = e.target.value;
+      
+      console.log("difficulty: " + curr_difficulty);
+      this.difficulty = curr_difficulty;
+
+      this.setDifficultySettings();
+      this.onNewGame();
     },
 
     getBombsCount() {
@@ -132,27 +94,11 @@ const app = new Vue({
       return ((Date.now() - this.startTime)/1000).toFixed(2);
     },
 
-    calcAround(_id) {
-      const row = Math.floor(_id / 30);
-      const col = _id % 30;
-
-      let toCheck = [
-        [row-1,col-1],[row-1,col],[row-1,col+1],
-        [row  ,col-1],[row  ,col],[row  ,col+1],
-        [row+1,col-1],[row+1,col],[row+1,col+1],
-      ];
-      toCheck = toCheck.filter(coord => coord[0] >=0 && coord[0] <16);
-      toCheck = toCheck.filter(coord => coord[1] >=0 && coord[1] <30);
-      toCheck = toCheck.map(coord => (30*coord[0])+coord[1]);
-
-      return toCheck;
-    },
-
     calcAreaToOpen(_id, selected = [], depth = 0) {
       if (depth > 4) return;
       selected.push(_id);
 
-      toCheck = this.calcAround(_id);
+      toCheck = calcAdjacentBoxes(_id, this.width, this.height);
       toCheck = toCheck.filter(id => !selected.includes(id));
 
       this.boxes.forEach(box => {
@@ -189,7 +135,7 @@ const app = new Vue({
 
     uncoverNums(_id) {
       const box = this.boxes[_id];
-      const aroundIDs = this.calcAround(box.id);
+      const aroundIDs = calcAdjacentBoxes(box.id, this.width, this.height);
 
       let boxesToUncover = this.boxes.filter(x => aroundIDs.includes(x.id));
       boxesToUncover = boxesToUncover.filter(x => x.covered);
@@ -237,7 +183,10 @@ const app = new Vue({
       this.gameStatus = "Playing";
 
       if (this.placeHolderMap) {
-        this.boxes = getMap(null, _id);
+        this.setDifficultySettings();
+
+        let newmap = generateMap(this.width, this.height, this.mines, _id);
+        this.boxes = getMap(newmap);
         this.placeHolderMap = false;
       }
 
@@ -270,13 +219,14 @@ const app = new Vue({
 
     onNewGame() {
       this.gameOver = false;
+      clearInterval(this.timer);
+      this.timer = null;
       this.startTime = Date.now();
       this.playTime = 0;
-      this.timer = null;
       
       this.boxes = [];
 
-      for(let i = 0; i < 30*16; i++) {
+      for(let i = 0; i < this.height*this.width; i++) {
         this.boxes.push({ 
           id: i,
           value: 0,
@@ -287,16 +237,6 @@ const app = new Vue({
       this.placeHolderMap = true;
 
       // this.boxes = getMap();
-    },
-
-    onRetry() {
-      this.gameOver = false;
-      this.startTime = Date.now();
-      this.playTime = 0;
-      this.timer = null;
-
-      this.startTimer();
-      this.coverAllBoxes();
     },
 
     keyHandler() {

@@ -4,6 +4,8 @@
   --dark2: #333;
   --light1: #eee;
   --light2: #707070;
+  --red: rgb(181, 0, 48);
+  --blue: rgb(12, 116, 214);
 }
 
 * {
@@ -54,19 +56,64 @@ footer .controls input[type=button] {
   border-radius: 5px;
   font-size: 1em;
   transition: background-color .2s;
+
+  outline: none;
 }
 
-footer .controls input[type=button]:hover {
+footer .controls select,
+footer .controls input[type=number] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+
+  border: none;
+  border-bottom: var(--accent) solid 0.2em;
+  border-radius: 5px;
+
+  margin: 0;
+  padding: 0.5em 0.5em;
+  background-color: var(--dark1);
+  color: var(--accent);
+  font-weight: bold;
+  cursor: pointer;
+  font-family: sans-serif;
+  font-size: 1em;
+  transition: background-color .2s;
+
+  outline: none;
+}
+
+footer .controls input[type=number] {
+  width: 3.5em;
+}
+
+footer .controls input[type=button]:hover,
+footer .controls input[type=number]:hover,
+footer .controls select:hover {
   /* opacity: 90%; */
   background-color: var(--dark2);
   color: var(--accent);
 }
 
+footer .controls .difficulty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+footer .controls .difficulty input {
+  margin: .3em;
+}
+
 .boxes {
   display: flex;
-  flex-wrap: wrap;
-  width: 1080px;
+  /* width: 1080px; */
   padding: 1em 0;
+  flex-direction: column;
+}
+
+.boxes .row {
+  display: flex;
 }
 
 .box {
@@ -95,17 +142,17 @@ footer .controls input[type=button]:hover {
 }
 
 .box.covered:hover {
-  background-color: rgb(214, 150, 12);
+  background-color: var(--accent);
   color:rgb(31, 31, 31);
   cursor: pointer;
 }
 
 .box.bomb {
-  background-color: rgb(181, 0, 48);
+  background-color: var(--red);
 }
 
 .box.flagged {
-  background-color: rgb(12, 116, 214);
+  background-color: var(--blue);
 }
 
 .unselectable {
@@ -114,4 +161,8 @@ footer .controls input[type=button]:hover {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+h1, h2, h3, h4, h5, h6, b {
+  color: var(--accent);
 }

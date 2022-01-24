@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="style.css">
     <script defer src="testmaps.js"></script>
+    <script defer src="utils.js"></script>
     <script defer src="main.js"></script>
     <title>Minesweeper</title>
 </head>
@@ -23,14 +24,28 @@
     </div>
 
     <div class="boxes unselectable">
-      <div 
+      <!-- <div 
+        v-for="box in boxes" 
         v-bind:title="box.id" 
         v-bind:class="{box, covered: box.covered, flagged: box.flagged, bomb: box.value == 'x' && !box.covered}" 
-        v-for="box in boxes" 
         v-on:click="onClick(box.id)"
         v-on:click.right="onClickRight(box.id)"
         >
         {{box.covered ? "" : box.value}}
+      </div> -->
+
+      <div v-for="h in height" class="row">
+        <div 
+          v-for="w in width" 
+          v-bind:title="boxes[((h-1)*width + w-1)].id" 
+          class="box"
+          v-bind:class="{covered: boxes[((h-1)*width + w-1)].covered, flagged: boxes[((h-1)*width + w-1)].flagged, bomb: boxes[((h-1)*width + w-1)].value == 'x' && !boxes[((h-1)*width + w-1)].covered}" 
+          v-on:click="onClick(boxes[((h-1)*width + w-1)].id)"
+          v-on:click.right="onClickRight(boxes[((h-1)*width + w-1)].id)"
+        >
+          {{boxes[((h-1)*width + w-1)].covered ? "" : boxes[((h-1)*width + w-1)].value}}
+          <!-- {{ boxes[((h-1)*width + w-1)].value }} -->
+        </div>
       </div>
     </div>
 
@@ -42,8 +57,21 @@
         <p><b>Ctrl + z</b>: cover all bombs</p>
       </div>
       <div class="controls">
+        <select name="difficulty" id="difficulty" v-on:change="onChangeDifficulty($event)">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="expert" selected>Expert</option>
+          <!-- <option value="custom">Custom</option> -->
+        </select>
+
         <input type="button" value="New Game" v-on:click="onNewGame()">
-        <input type="button" value="Retry" v-on:click="onRetry()">
+        <!-- <input type="button" value="Retry" v-on:click="onRetry()"> -->
+
+        <div class="difficulty" v-if="difficulty == 'custom'">
+          <input type="number" v-model="height" min="1" name="height" id="height" placeholder="Height">
+          <input type="number" v-model="width" min="1" name="width" id="width" placeholder="Width">
+          <input type="number" v-model="mines" min="1" name="mines" id="mines" placeholder="Mines">
+        </div>
       </div>
     </footer>
 
