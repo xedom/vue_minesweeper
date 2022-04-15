@@ -18,9 +18,9 @@
   <div id="app">
     <h1>Minesweeper</h1>
     <div class="stats">
-      <p><b>Gamestatus:</b> {{ gameStatus }}</p>
-      <p><b>Bombs:</b> {{getFlaggetBoxesCount()}} / {{getBombsCount()}}</p>
-      <p><b>Time:</b> {{playTime}}</p>
+      <span><b>Gamestatus:</b> {{ gameStatus }}</span>
+      <span><b>Bombs:</b> {{getFlaggetBoxesCount()}} / {{getBombsCount()}}</span>
+      <span><b>Time:</b> {{playTime}}</span>
     </div>
 
     <div class="boxes unselectable">
@@ -52,9 +52,9 @@
     <footer>
       <div class="instructions">
         <h3>Commands:</h3>
-        <p><b>Left Click</b>: uncover box / uncover adjacent boxes</p>
-        <p><b>Right Click</b>: flag box</p>
-        <p><b>Ctrl + z</b>: cover all bombs</p>
+        <span><b>Left Click</b>: uncover box / uncover adjacent boxes</span>
+        <span><b>Right Click</b>: flag box</span>
+        <span><b>Ctrl + z</b>: cover all bombs</span>
       </div>
       <div class="controls">
         <select name="difficulty" id="difficulty" v-on:change="onChangeDifficulty($event)">

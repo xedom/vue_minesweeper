@@ -29,12 +29,12 @@
   display: flex;
 }
 
-.stats p {
+.stats span {
   padding: 0 1em;
 }
 
 footer {
-  width: 1080px;
+  /* width: 1080px; */
   display: flex;
   justify-content: space-between;
 }
@@ -42,6 +42,7 @@ footer {
 footer .instructions {
   display: flex;
   flex-direction: column;
+  padding-right: 2em;
 }
 
 footer .controls input[type=button] {
@@ -81,6 +82,10 @@ footer .controls input[type=number] {
   transition: background-color .2s;
 
   outline: none;
+}
+
+footer .controls select {
+  margin: 0 1em;
 }
 
 footer .controls input[type=number] {
@@ -165,4 +170,15 @@ footer .controls .difficulty input {
 
 h1, h2, h3, h4, h5, h6, b {
   color: var(--accent);
+}
+
+@media screen and (max-width: 750px) {
+  footer {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  footer .instructions {
+    padding-top: 2em;
+  }
 }
