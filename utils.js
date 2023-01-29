@@ -61,12 +61,14 @@ function getMap(gamemap = null, clickedBoxID = null) {
   if (gamemap == null) gamemap = generateMap(30, 16, 99, clickedBoxID);
   //generateMap(2, clickedBoxID);
 
+  // converting map 0 to = = and 9 to "x"
   gamemap = gamemap.map(x => {
-    if (x == 0) return ""
-    if (x == 9) return "x"
+    if (x == 0) return "";
+    if (x == 9) return "x";
     return x.toString();
   })
 
+  // additionwal info to each block
   let id = 0;
   gamemap = gamemap.map(x => ({ 
     id: id++,

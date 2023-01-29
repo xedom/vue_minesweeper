@@ -11,6 +11,7 @@ const app = new Vue({
     playTime: 0,
     timer: null,
     placeHolderMap: true,
+    
     difficulty: "expert",
     height: 0,
     width: 0,
@@ -45,33 +46,31 @@ const app = new Vue({
       console.log(_id);
       console.log(prop);
     },
-
     startTimer() {
       if (this.timer != null) return;
+      this.startTime = Date.now();
       this.timer = setInterval(() => {
         this.playTime = this.getPlaytime();
       }, 100)
     },
-
     setDifficultySettings() {
       if (this.difficulty == "beginner") {
         this.width = 8;
-        this.height = 8
+        this.height = 8;
         this.mines = 10;
       } else if (this.difficulty == "intermediate") {
         this.width = 16;
-        this.height = 16
+        this.height = 16;
         this.mines = 40;
       } else if (this.difficulty == "expert") {
         this.width = 30;
-        this.height = 16
+        this.height = 16;
         this.mines = 99;
       }
       // else if (this.difficulty == "custom") {
       //   this.width =
       // }
     },
-
     onChangeDifficulty(e) {
       let curr_difficulty = e.target.value;
       
@@ -81,19 +80,15 @@ const app = new Vue({
       this.setDifficultySettings();
       this.onNewGame();
     },
-
     getBombsCount() {
       return this.boxes.filter(box => box.value == "x").length;
     },
-
-    getFlaggetBoxesCount() {
+    getFlaggedBoxesCount() {
       return this.boxes.filter(box => box.flagged).length;
     },
-
     getPlaytime() {
       return ((Date.now() - this.startTime)/1000).toFixed(2);
     },
-
     calcAreaToOpen(_id, selected = [], depth = 0) {
       if (depth > 4) return;
       selected.push(_id);
@@ -112,19 +107,16 @@ const app = new Vue({
 
       return toCheck;
     },
-
     uncoverBombs() {
       this.boxes.forEach(box => {
         if (box.value == "x") box.covered = false;
       })
     },
-
     coverBombs() {
       this.boxes.forEach(box => {
         if (box.value == "x") box.covered = true;
       })
     },
-
     uncoverArea(_id) {
       const ids = this.calcAreaToOpen(_id);
 
@@ -132,7 +124,6 @@ const app = new Vue({
         if (ids.includes(box.id) && !box.flagged) box.covered = false;
       });
     },
-
     uncoverNums(_id) {
       const box = this.boxes[_id];
       const aroundIDs = calcAdjacentBoxes(box.id, this.width, this.height);
@@ -146,14 +137,12 @@ const app = new Vue({
       boxesToUncover = boxesToUncover.filter(box => !box.flagged);
       boxesToUncover.forEach(box => this.onClick(box.id));
     },
-
     coverAllBoxes() {
       this.boxes.forEach(box => {
         box.covered = true;
         box.flagged = false;
       })
     },
-
     gameOverHandler() {
       this.gameOver = true;
       this.uncoverBombs();
@@ -162,7 +151,6 @@ const app = new Vue({
       clearInterval(this.timer);
       this.timer = null;
     },
-
     checkWin() {
       const notBombCount = this.boxes.filter(box => box.value != "x").length;
       const uncoveredBoxesCount = this.boxes.filter(box => !box.covered).length;
@@ -176,7 +164,6 @@ const app = new Vue({
         this.timer = null;
       }
     },
-
     onClick(_id) {
       if (this.gameOver) return;
       
@@ -210,18 +197,15 @@ const app = new Vue({
 
       this.checkWin();
     },
-
     onClickRight(_id) {
       if (this.gameOver) return;
       const box = this.boxes[_id];
       if (box.covered) box.flagged = !box.flagged;
     },
-
     onNewGame() {
       this.gameOver = false;
       clearInterval(this.timer);
       this.timer = null;
-      this.startTime = Date.now();
       this.playTime = 0;
       
       this.boxes = [];
@@ -238,7 +222,6 @@ const app = new Vue({
 
       // this.boxes = getMap();
     },
-
     keyHandler() {
       window.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === 'z') {
