@@ -1,10 +1,10 @@
 :root {
-  --accent: rgb(214, 150, 12);
+  --accent: rgb(203, 139, 0);
   --dark1: #151515;
-  --dark2: #333;
+  --dark2: #252525;
   --light1: #eee;
-  --light2: #707070;
-  --red: rgb(181, 0, 48);
+  --light2: #585858;
+  --red: rgb(177, 0, 47);
   --blue: rgb(12, 116, 214);
 }
 
@@ -131,7 +131,7 @@ footer .controls .difficulty input {
   align-items: center;
   justify-content: center;
 
-  background-color: #333;
+  background-color: var(--dark2);
   transition: background-color .2s;
 }
 

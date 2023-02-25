@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="style.css">
     <script defer src="testmaps.js"></script>
     <script defer src="utils.js"></script>
+    <script defer src="game.js"></script>
     <script defer src="main.js"></script>
     <title>Minesweeper</title>
 </head>
@@ -20,20 +21,10 @@
     <div class="stats">
       <span><b>Gamestatus:</b> {{ gameStatus }}</span>
       <span><b>Bombs:</b> {{getFlaggedBoxesCount()}} / {{getBombsCount()}}</span>
-      <span><b>Time:</b> {{playTime}}</span>
+      <span><b>Time:</b> {{parseTime(playTime)}}</span>
     </div>
 
     <div class="boxes unselectable">
-      <!-- <div 
-        v-for="box in boxes" 
-        v-bind:title="box.id" 
-        v-bind:class="{box, covered: box.covered, flagged: box.flagged, bomb: box.value == 'x' && !box.covered}" 
-        v-on:click="onClick(box.id)"
-        v-on:click.right="onClickRight(box.id)"
-        >
-        {{box.covered ? "" : box.value}}
-      </div> -->
-
       <div v-for="h in height" class="row">
         <div 
           v-for="w in width" 
