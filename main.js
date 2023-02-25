@@ -2,12 +2,16 @@ document.oncontextmenu = function() {
   return false;
 }
 
+console.log(new Game(8, 8, 10));
+
 const app = new Vue({
   el: '#app',
   data: {
+    game: null,
+
     boxes: null,
     gameOver: false,
-    startTime: Date.now(),
+    startTimeDate: Date.now(),
     playTime: 0,
     timer: null,
     placeHolderMap: true,
@@ -42,13 +46,31 @@ const app = new Vue({
     this.placeHolderMap = true;
   },
   methods: {
+    parseTime(time) {
+      time *= 1000;
+      let milliseconds = (time % 1000);
+      let seconds = Math.floor(time / 1000);
+      let minutes = Math.floor(seconds / 60);
+      let hours = Math.floor(minutes / 60);
+      seconds = seconds % 60;
+      minutes = minutes % 60;
+      return `${
+        hours.toString().padStart(2, '0')
+      }:${
+        minutes.toString().padStart(2, '0')
+      }:${
+        seconds.toString().padStart(2, '0')
+      }.${
+        milliseconds.toString().slice(0, 3).padStart(3, '0')
+      }`;
+    },
     getBox(_id, prop) {
       console.log(_id);
       console.log(prop);
     },
     startTimer() {
       if (this.timer != null) return;
-      this.startTime = Date.now();
+      this.startTimeDate = Date.now();
       this.timer = setInterval(() => {
         this.playTime = this.getPlaytime();
       }, 100)
@@ -87,7 +109,7 @@ const app = new Vue({
       return this.boxes.filter(box => box.flagged).length;
     },
     getPlaytime() {
-      return ((Date.now() - this.startTime)/1000).toFixed(2);
+      return ((Date.now() - this.startTimeDate)/1000).toFixed(2);
     },
     calcAreaToOpen(_id, selected = [], depth = 0) {
       if (depth > 4) return;
@@ -227,8 +249,10 @@ const app = new Vue({
         if (e.ctrlKey && e.key === 'z') {
           this.coverBombs();
           this.gameOver = false;
+          const lstPlayTime = this.playTime;
           this.startTimer();
-          this.gameStatus = "Playing";
+          this.startTimeDate = Date.now() - (lstPlayTime*1000);
+          this.gameStatus = "Playing (CheatMode)";
         }
       });
     },
