@@ -2,7 +2,9 @@ document.oncontextmenu = function() {
   return false;
 }
 
-console.log(new Game(8, 8, 10));
+const game11 = new Game(8, 8, 10);
+game11.populateFields(game11.fields[0]);
+console.log(game11);
 
 const app = new Vue({
   el: '#app',
