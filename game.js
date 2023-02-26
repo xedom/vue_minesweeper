@@ -166,6 +166,7 @@ class Game {
   }
   stopTimer() {
     this.endDateTime = new Date();
+    this.time = Math.floor((this.endDateTime - this.startDateTime));
     clearInterval(this.timer);
   }
   start(field) {
@@ -231,6 +232,7 @@ class Game {
     this.uncoverAdjacentFields(field);
     if (this.fields.filter(field => field.covered && !field.isBomb()).length === 0) {
       this.wonGame();
+      this.flagRemainingBombFields();
     }
   }
   onFieldRightClick(field) {
@@ -284,6 +286,11 @@ class Game {
   }
   getFlagsCount() {
     return this.fields.filter(field => field.flagged).length;
+  }
+  flagRemainingBombFields() {
+    this.fields.forEach(field => {
+      if (field.isBomb() && !field.flagged) field.flagged = true;
+    });
   }
   isEnded() {
     return this.endDateTime;

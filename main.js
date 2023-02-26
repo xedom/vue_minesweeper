@@ -67,14 +67,14 @@ const app = new Vue({
     onChangeDifficulty(e) {
       let difficulty = e.target.value;
       
-      console.log("difficulty: " + difficulty);
+      console.log("main.onChangeDifficulty: " + difficulty);
       this.createGame(GameDifficulty[difficulty]);
     },
     onNewGame() {
-      this.createGame(GameDifficulty.Advanced);
+      this.createGame(GameDifficulty[this.difficulty]);
     },
     createGame(difficulty = GameDifficulty.Advanced) {
-      console.log("createGame: " + difficulty);
+      console.log("main.createGame: " + difficulty);
 
       if (this.game) {
         this.game.stop();
