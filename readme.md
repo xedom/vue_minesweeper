@@ -1,5 +1,5 @@
 # Minesweeper
 
-[Try it out!](https://xed.im/js_minesweeper/)
+[Try it out!](https://xed.im/minesweeper/)
 
 ![Minesweeper preview](preview.jpg)
