@@ -18,7 +18,7 @@
   <div id="app">
     <h1>Minesweeper</h1>
     <div class="stats">
-      <span><b>Gamestatus:</b> {{ gameStatus }}</span>
+      <span><b>GameStatus:</b> {{ gameStatus }}</span>
       <span><b>Bombs:</b> {{ game.getFlagsCount() }} / {{ game.bombsCount }}</span>
       <span><b>Time:</b> {{ parseTime(playTime) }}</span>
     </div>
@@ -64,10 +64,6 @@
         </div>
       </div>
     </footer>
-
-    <!-- <div class="boxes unselectable">
-      <div class="box" v-for="box in boxes"> {{box.value}} </div>
-    </div> -->
 
   </div>
 

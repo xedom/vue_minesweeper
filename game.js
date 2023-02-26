@@ -125,6 +125,22 @@ class Game {
   
     return toCheck;
   }
+  getAdjacentFields(field, width, height) {
+    const row = Math.floor(field.id / width);
+    const col = field.id % width;
+  
+    let toCheck = [
+      [row-1,col-1],[row-1,col],[row-1,col+1],
+      [row  ,col-1],[row  ,col],[row  ,col+1],
+      [row+1,col-1],[row+1,col],[row+1,col+1],
+    ];
+    toCheck = toCheck.filter(coord => coord[0] >=0 && coord[0] < height);
+    toCheck = toCheck.filter(coord => coord[1] >=0 && coord[1] < width);
+    toCheck = toCheck.map(coord => (width*coord[0])+coord[1]);
+    const fields = toCheck.map(id => this.fields[id]);
+
+    return fields;
+  }
   getDifficulty() {
     if (this.width === 8 && this.height === 8 && this.bombsCount === 10)
       return GameDifficulty.Beginner;
@@ -207,37 +223,30 @@ class Game {
     this.onGameLost();
   }
   onFieldClick(field) {
-    if (this.isGameOver()) return;
+    if (this.isEnded()) return;
     if (this.gameStatus === GameStatus.Starting) this.start(field);
     if (field.flagged) return;
 
-    this.uncoverField(field);
-    if (field.isBomb()) {
-      this.lostGame(); return;
-    }
-
+    this.uncoverFieldAndCheck(field);
     this.uncoverAdjacentFields(field);
     if (this.fields.filter(field => field.covered && !field.isBomb()).length === 0) {
       this.wonGame();
     }
+  }
+  onFieldRightClick(field) {
+    if (this.isEnded()) return;
+    if (!field.covered) return;
+    field.flagged = !field.flagged;
   }
   uncoverField(field) {
     if (!field.covered) return;
     if (field.flagged) return;
     
     field.setCovered(false);
-    if (field.isBomb()) {
-      this.lostGame();
-      return;
-    }
   }
-  onFieldRightClick(field) {
-    // if (this.gameStatus === GameStatus.Starting) this.start();
-    if (this.gameStatus === GameStatus.Won) return;
-    if (this.gameStatus === GameStatus.GameOver) return;
-    if (this.isGameOver()) return;
-    if (!field.covered) return;
-    field.flagged = !field.flagged;
+  uncoverFieldAndCheck(field) {
+    this.uncoverField(field);
+    if (field.isBomb() && !field.covered) this.lostGame();
   }
   uncoverAdjacentFields(field) {
     if (field.value === 0) this.uncoverEmptyFields(field);
@@ -250,24 +259,22 @@ class Game {
       const adjacentField = this.fields[fieldID];
       if (!adjacentField.covered) continue;
 
-      this.uncoverField(adjacentField);
-      this.uncoverAdjacentFields(adjacentField);
+      this.uncoverFieldAndCheck(adjacentField);
+
+      if (adjacentField.value === 0)
+        this.uncoverEmptyFields(adjacentField);
     }
   }
   uncoverNumberFields(field) {
-    const adjacentFieldsID = this.getAdjacentFieldsID(field.id, this.width, this.height);
-    let flaggedCount = 0;
-    for(let fieldID of adjacentFieldsID) {
-      const adjacentField = this.fields[fieldID];
-      if (adjacentField.flagged) flaggedCount++;
-    }
-    if (flaggedCount === field.value) {
-      for(let fieldID of adjacentFieldsID) {
-        const adjacentField = this.fields[fieldID];
-        if (!adjacentField.covered) continue;
-        this.uncoverField(adjacentField);
-        this.uncoverAdjacentFields(adjacentField);
-      }
+    const adjacentFields = this.getAdjacentFields(field, this.width, this.height);
+    const flaggedCount = adjacentFields.filter(field => field.flagged).length;
+
+    if (flaggedCount !== field.value) return;
+
+    // uncover all adjacent not flagged fields
+    for(let field of adjacentFields) {
+      this.uncoverFieldAndCheck(field);
+      if (field.value === 0) this.uncoverEmptyFields(field);
     }
   }
   uncoverBombFields() {
@@ -277,5 +284,8 @@ class Game {
   }
   getFlagsCount() {
     return this.fields.filter(field => field.flagged).length;
+  }
+  isEnded() {
+    return this.endDateTime;
   }
 }
