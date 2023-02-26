@@ -14,10 +14,27 @@ const GameDifficulty = createEnum([
   'Custom',
 ]);
 
+const MoveType = createEnum([
+  'Uncover',
+  'UncoverAdjacent',
+  'Flag',
+]);
+
 class Move {
-  constructor(clickedField, fields) {
+  constructor(moveType, clickedField) {
+    this.moveType = moveType;
     this.clickedField = clickedField;
-    this.fields = fields;
+
+    this.time = new Date();
+  }
+  display() {
+    const time = this.time.toLocaleTimeString();
+    const field = this.clickedField;
+    return `${time} - ${this.moveType} - ${field.x}, ${field.y}`;
+  }
+  equals(move) {
+    return this.moveType === move.moveType
+      && this.clickedField.id === move.clickedField.id;
   }
 }
 
@@ -59,6 +76,7 @@ class Game {
 
     this.fields = []; // <Field>
     this.moves = []; // <Move>
+    this.lstMove = null; // <Move>
     
     this.gameStatus = GameStatus.Starting;
     this.gameDifficulty = this.getDifficulty();
@@ -228,6 +246,15 @@ class Game {
     if (this.gameStatus === GameStatus.Starting) this.start(field);
     if (field.flagged) return;
 
+    const move = new Move(MoveType.Uncover, field);
+    if (this.lstMove === null) {
+      this.lstMove = move;
+      this.moves.push(this.lstMove);
+    } else if (!this.lstMove.equals(move)) {
+      this.moves.push(this.lstMove)
+      this.lstMove = move;
+    };
+
     this.uncoverFieldAndCheck(field);
     this.uncoverAdjacentFields(field);
     if (this.fields.filter(field => field.covered && !field.isBomb()).length === 0) {
@@ -238,6 +265,8 @@ class Game {
   onFieldRightClick(field) {
     if (this.isEnded()) return;
     if (!field.covered) return;
+    
+    this.moves.push(new Move(MoveType.Flag, field));
     field.flagged = !field.flagged;
   }
   uncoverField(field) {
@@ -251,8 +280,10 @@ class Game {
     if (field.isBomb() && !field.covered) this.lostGame();
   }
   uncoverAdjacentFields(field) {
-    if (field.value === 0) this.uncoverEmptyFields(field);
-    if (field.value !== 0) this.uncoverNumberFields(field);
+    if (field.flagged) return;
+
+    this.uncoverEmptyFields(field);
+    this.uncoverNumberFields(field);
   }
   uncoverEmptyFields(field) {
     if (field.value !== 0) return;
@@ -268,6 +299,7 @@ class Game {
     }
   }
   uncoverNumberFields(field) {
+    if (field.value === 0) return;
     const adjacentFields = this.getAdjacentFields(field, this.width, this.height);
     const flaggedCount = adjacentFields.filter(field => field.flagged).length;
 

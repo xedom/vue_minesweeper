@@ -17,6 +17,12 @@
 <body>
   <div id="app">
     <h1>Minesweeper</h1>
+    <!-- <div class="movesList">
+      <div v-for="move in game.moves" class="move">
+        {{ move.display() }}
+      </div>
+    </div> -->
+
     <div class="stats">
       <span><b>GameStatus:</b> {{ gameStatus }}</span>
       <span><b>Bombs:</b> {{ game.getFlagsCount() }}/{{ game.bombsCount }}</span>
@@ -27,7 +33,6 @@
       <div v-for="h in game.height" class="row">
         <div 
           v-for="w in game.width" 
-          v-bind:title="game.getField(h,w).id" 
           class="box"
           v-bind:class="{
             covered: game.getField(h,w).covered,

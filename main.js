@@ -22,7 +22,7 @@ const app = new Vue({
     this.keyHandler();
 
     // creating a new game
-    this.createGame(GameDifficulty.Advanced);
+    this.createGame(GameDifficulty.Intermediate);
   },
   methods: {
     onGameStart() {
