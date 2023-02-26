@@ -1,7 +1,7 @@
 const GameStatus = createEnum([
   'Starting',
   'Playing',
-  'Playing (CheatMode)',
+  'CheatMode',
   'GameOver',
   'Stopped',
   'Won',
@@ -294,5 +294,12 @@ class Game {
   }
   isEnded() {
     return this.endDateTime;
+  }
+  activateCheatMode() {
+    // todo: add cheat mode
+    if (!this.isEnded()) return;
+    if (this.won) return;
+
+    this.setStatus(GameStatus.CheatMode);
   }
 }

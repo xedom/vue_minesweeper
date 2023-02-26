@@ -104,16 +104,15 @@ const app = new Vue({
       }
     },
     keyHandler() {
-      // window.addEventListener('keydown', (e) => {
-      //   if (e.ctrlKey && e.key === 'z') {
-      //     this.coverBombs();
-      //     this.gameOver = false;
-      //     const lstPlayTime = this.playTime;
-      //     this.startTimer();
-      //     this.startTimeDate = Date.now() - (lstPlayTime*1000);
-      //     this.gameStatus = "Playing (CheatMode)";
-      //   }
-      // });
+      window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'z') {
+          this.game.activateCheatMode();
+          // const lstPlayTime = this.playTime;
+          // this.startTimer();
+          // this.startTimeDate = Date.now() - (lstPlayTime*1000);
+          // this.gameStatus = "Playing (CheatMode)";
+        }
+      });
     },
   }
 })
