@@ -2,54 +2,53 @@ document.oncontextmenu = function() {
   return false;
 }
 
-const game11 = new Game(8, 8, 10);
-game11.populateFields(game11.fields[0]);
-console.log(game11);
-
 const app = new Vue({
   el: '#app',
   data: {
     game: null,
 
-    boxes: null,
-    gameOver: false,
-    startTimeDate: Date.now(),
     playTime: 0,
-    timer: null,
-    placeHolderMap: true,
     
+    gameStatus: "xxxxxx",
     difficulty: "expert",
-    height: 0,
-    width: 0,
-    mines: 0,
+    difficulties: [
+      GameDifficulty.Beginner,
+      GameDifficulty.Intermediate,
+      GameDifficulty.Advanced,
+    ],
   },
   created: function () {
     // this.startTimer();
     this.keyHandler();
-    this.gameStatus = "Waiting";
 
-    // setting default difficulty
-    this.difficulty = "expert";
-    this.height = 16;
-    this.width = 30;
-    this.mines = 99;
+    // creating a new game
 
-    // placeholder
-    this.boxes = [];
+    this.createGame(GameDifficulty.Advanced);
 
-    for(let i = 0; i < this.height*this.width; i++) {
-      this.boxes.push({ 
-        id: i,
-        value: 0,
-        covered: true,
-        flagged: false,
-      });
-    }
-    this.placeHolderMap = true;
   },
   methods: {
+    onGameStart() {
+      console.log("main.onGameStart");
+    },
+    onGameStatusChange(status) {
+      console.log("main.onGameStatusChange: " + status);
+      this.gameStatus = status;
+    },
+    onGameWon() {
+      console.log("main.onGameWon");
+    },
+    onGameLost() {
+      console.log("main.onGameLost");
+    },
+    onGameDifficultyChange(difficulty) {
+      console.log("main.onGameDifficultyChange: " + difficulty);
+      this.difficulty = difficulty;
+    },
+    onGameTimeChange(time) {
+      this.playTime = time;
+    },
+
     parseTime(time) {
-      time *= 1000;
       let milliseconds = (time % 1000);
       let seconds = Math.floor(time / 1000);
       let minutes = Math.floor(seconds / 60);
@@ -66,197 +65,70 @@ const app = new Vue({
         milliseconds.toString().slice(0, 3).padStart(3, '0')
       }`;
     },
-    getBox(_id, prop) {
-      console.log(_id);
-      console.log(prop);
-    },
-    startTimer() {
-      if (this.timer != null) return;
-      this.startTimeDate = Date.now();
-      this.timer = setInterval(() => {
-        this.playTime = this.getPlaytime();
-      }, 100)
-    },
-    setDifficultySettings() {
-      if (this.difficulty == "beginner") {
-        this.width = 8;
-        this.height = 8;
-        this.mines = 10;
-      } else if (this.difficulty == "intermediate") {
-        this.width = 16;
-        this.height = 16;
-        this.mines = 40;
-      } else if (this.difficulty == "expert") {
-        this.width = 30;
-        this.height = 16;
-        this.mines = 99;
-      }
-      // else if (this.difficulty == "custom") {
-      //   this.width =
-      // }
-    },
+
     onChangeDifficulty(e) {
-      let curr_difficulty = e.target.value;
+      let difficulty = e.target.value;
       
-      console.log("difficulty: " + curr_difficulty);
-      this.difficulty = curr_difficulty;
-
-      this.setDifficultySettings();
-      this.onNewGame();
+      console.log("difficulty: " + difficulty);
+      this.createGame(GameDifficulty[difficulty]);
     },
-    getBombsCount() {
-      return this.boxes.filter(box => box.value == "x").length;
-    },
-    getFlaggedBoxesCount() {
-      return this.boxes.filter(box => box.flagged).length;
-    },
-    getPlaytime() {
-      return ((Date.now() - this.startTimeDate)/1000).toFixed(2);
-    },
-    calcAreaToOpen(_id, selected = [], depth = 0) {
-      if (depth > 4) return;
-      selected.push(_id);
+    // checkWin() {
+    //   const notBombCount = this.boxes.filter(box => box.value != "x").length;
+    //   const uncoveredBoxesCount = this.boxes.filter(box => !box.covered).length;
 
-      toCheck = calcAdjacentBoxes(_id, this.width, this.height);
-      toCheck = toCheck.filter(id => !selected.includes(id));
+    //   if (notBombCount == uncoveredBoxesCount) {
+    //     this.gameOver = true;
+    //     this.uncoverBombs();
+    //     this.gameStatus = "Won";
 
-      this.boxes.forEach(box => {
-        if (!selected.includes(box.id) && toCheck.includes(box.id) && box.value == "") {
-          toCheck = [
-            ...toCheck, 
-            ...this.calcAreaToOpen(box.id, selected)
-          ]
-        }
-      });
-
-      return toCheck;
-    },
-    uncoverBombs() {
-      this.boxes.forEach(box => {
-        if (box.value == "x") box.covered = false;
-      })
-    },
-    coverBombs() {
-      this.boxes.forEach(box => {
-        if (box.value == "x") box.covered = true;
-      })
-    },
-    uncoverArea(_id) {
-      const ids = this.calcAreaToOpen(_id);
-
-      this.boxes.forEach(box => {
-        if (ids.includes(box.id) && !box.flagged) box.covered = false;
-      });
-    },
-    uncoverNums(_id) {
-      const box = this.boxes[_id];
-      const aroundIDs = calcAdjacentBoxes(box.id, this.width, this.height);
-
-      let boxesToUncover = this.boxes.filter(x => aroundIDs.includes(x.id));
-      boxesToUncover = boxesToUncover.filter(x => x.covered);
-
-      flaggedCounter = (boxesToUncover.filter(x => x.flagged)).length;
-      if (flaggedCounter != box.value) return;
-
-      boxesToUncover = boxesToUncover.filter(box => !box.flagged);
-      boxesToUncover.forEach(box => this.onClick(box.id));
-    },
-    coverAllBoxes() {
-      this.boxes.forEach(box => {
-        box.covered = true;
-        box.flagged = false;
-      })
-    },
-    gameOverHandler() {
-      this.gameOver = true;
-      this.uncoverBombs();
-      this.gameStatus = "Game Over";
-
-      clearInterval(this.timer);
-      this.timer = null;
-    },
-    checkWin() {
-      const notBombCount = this.boxes.filter(box => box.value != "x").length;
-      const uncoveredBoxesCount = this.boxes.filter(box => !box.covered).length;
-
-      if (notBombCount == uncoveredBoxesCount) {
-        this.gameOver = true;
-        this.uncoverBombs();
-        this.gameStatus = "Won";
-
-        clearInterval(this.timer);
-        this.timer = null;
-      }
-    },
-    onClick(_id) {
-      if (this.gameOver) return;
-      
-      this.gameStatus = "Playing";
-
-      if (this.placeHolderMap) {
-        this.setDifficultySettings();
-
-        let newmap = generateMap(this.width, this.height, this.mines, _id);
-        this.boxes = getMap(newmap);
-        this.placeHolderMap = false;
-      }
-
-      this.startTimer();
-      const box = this.boxes[_id];
-
-      // ignore if the box is flagged
-      if (box.flagged) return;
-
-      // game over if the uncovered box is a bomb
-      if (box.value == "x") this.gameOverHandler();
-
-      // if the box is empty uncover the area
-      if (box.value == "") this.uncoverArea(_id);
-
-      // clicked on uncovered box
-      if (!box.covered) this.uncoverNums(_id);
-
-      // just uncover the box
-      box.covered = false;
-
-      this.checkWin();
-    },
-    onClickRight(_id) {
-      if (this.gameOver) return;
-      const box = this.boxes[_id];
-      if (box.covered) box.flagged = !box.flagged;
-    },
+    //     clearInterval(this.timer);
+    //     this.timer = null;
+    //   }
+    // },
     onNewGame() {
-      this.gameOver = false;
-      clearInterval(this.timer);
-      this.timer = null;
-      this.playTime = 0;
-      
-      this.boxes = [];
+      this.createGame(GameDifficulty.Advanced);
+    },
+    createGame(difficulty = GameDifficulty.Advanced) {
+      console.log("createGame: " + difficulty);
 
-      for(let i = 0; i < this.height*this.width; i++) {
-        this.boxes.push({ 
-          id: i,
-          value: 0,
-          covered: true,
-          flagged: false,
-        });
+      if (this.game) {
+        this.game.stop();
+        this.game = null;
       }
-      this.placeHolderMap = true;
+      
+      const listeners = [
+        this.onGameStart,
+        this.onGameWon,
+        this.onGameLost,
+        this.onGameStatusChange,
+        this.onGameDifficultyChange,
+        this.onGameTimeChange,
+      ];
 
-      // this.boxes = getMap();
+      switch (difficulty) {
+        case GameDifficulty.Beginner:
+          this.game = new Game(8, 8, 10, listeners); break;
+        case GameDifficulty.Intermediate:
+          this.game = new Game(16, 16, 40, listeners); break;
+        case GameDifficulty.Advanced:
+          this.game = new Game(30, 16, 99, listeners); break;
+        case GameDifficulty.Custom:
+          this.game = new Game(30, 16, 10, listeners); break;
+        default:
+          break;
+      }
     },
     keyHandler() {
-      window.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'z') {
-          this.coverBombs();
-          this.gameOver = false;
-          const lstPlayTime = this.playTime;
-          this.startTimer();
-          this.startTimeDate = Date.now() - (lstPlayTime*1000);
-          this.gameStatus = "Playing (CheatMode)";
-        }
-      });
+      // window.addEventListener('keydown', (e) => {
+      //   if (e.ctrlKey && e.key === 'z') {
+      //     this.coverBombs();
+      //     this.gameOver = false;
+      //     const lstPlayTime = this.playTime;
+      //     this.startTimer();
+      //     this.startTimeDate = Date.now() - (lstPlayTime*1000);
+      //     this.gameStatus = "Playing (CheatMode)";
+      //   }
+      // });
     },
   }
 })

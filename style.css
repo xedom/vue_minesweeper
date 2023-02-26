@@ -31,6 +31,8 @@
 
 .stats span {
   padding: 0 1em;
+  font-family: monospace;
+  font-size: 20px;
 }
 
 footer {
