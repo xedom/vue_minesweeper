@@ -72,19 +72,6 @@ const app = new Vue({
       console.log("difficulty: " + difficulty);
       this.createGame(GameDifficulty[difficulty]);
     },
-    // checkWin() {
-    //   const notBombCount = this.boxes.filter(box => box.value != "x").length;
-    //   const uncoveredBoxesCount = this.boxes.filter(box => !box.covered).length;
-
-    //   if (notBombCount == uncoveredBoxesCount) {
-    //     this.gameOver = true;
-    //     this.uncoverBombs();
-    //     this.gameStatus = "Won";
-
-    //     clearInterval(this.timer);
-    //     this.timer = null;
-    //   }
-    // },
     onNewGame() {
       this.createGame(GameDifficulty.Advanced);
     },
