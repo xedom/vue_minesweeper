@@ -14,58 +14,6 @@ const GameDifficulty = createEnum([
   'Custom',
 ]);
 
-const MoveType = createEnum([
-  'Uncover',
-  'UncoverAdjacent',
-  'Flag',
-]);
-
-class Move {
-  constructor(moveType, clickedField) {
-    this.moveType = moveType;
-    this.clickedField = clickedField;
-
-    this.time = new Date();
-  }
-  display() {
-    const time = this.time.toLocaleTimeString();
-    const field = this.clickedField;
-    return `${time} - ${this.moveType} - ${field.x}, ${field.y}`;
-  }
-  equals(move) {
-    return this.moveType === move.moveType
-      && this.clickedField.id === move.clickedField.id;
-  }
-}
-
-class Field {
-  constructor(id, x, y, value) {
-    this.id = id;
-    this.x = x;
-    this.y = y;
-    this.setValue(value);
-    this.covered = true;
-    this.flagged = false;
-  }
-  setValue(value) {
-    this.value = value;
-  }
-  displayValue() {
-    if (this.flagged) return '🚩';
-    if (this.covered) return '';
-    if (this.isBomb()) return '💣';
-    if (this.value == 0) return '';
-    return this.value;
-  }
-  setCovered(covered) {
-    if (this.flagged) return;
-    this.covered = covered;
-  }
-  isBomb() {
-    return this.value == 9;
-  }
-}
-
 class Game {
   constructor(width, height, bombsCount, listeners) {
     this.addListeners(...listeners);
@@ -144,18 +92,8 @@ class Game {
     return toCheck;
   }
   getAdjacentFields(field, width, height) {
-    const row = Math.floor(field.id / width);
-    const col = field.id % width;
-  
-    let toCheck = [
-      [row-1,col-1],[row-1,col],[row-1,col+1],
-      [row  ,col-1],[row  ,col],[row  ,col+1],
-      [row+1,col-1],[row+1,col],[row+1,col+1],
-    ];
-    toCheck = toCheck.filter(coord => coord[0] >=0 && coord[0] < height);
-    toCheck = toCheck.filter(coord => coord[1] >=0 && coord[1] < width);
-    toCheck = toCheck.map(coord => (width*coord[0])+coord[1]);
-    const fields = toCheck.map(id => this.fields[id]);
+    const fieldsID = this.getAdjacentFieldsID(field.id, width, height);
+    const fields = fieldsID.map(id => this.fields[id]);
 
     return fields;
   }
@@ -170,7 +108,12 @@ class Game {
     return GameDifficulty.Custom;
   }
   getField(h, w) {
-    return this.fields[(h-1) * this.width + (w-1)];
+    const x = w-1;
+    const y = h-1;
+    const fieldPosition = (y) * this.width + (x);
+    const field = this.fields[fieldPosition];
+    if (!field) return new Field(fieldPosition, x, y, 11);
+    return field;
   }
   isGameOver() {
     return this.gameStatus === GameStatus.GameOver;
@@ -251,7 +194,7 @@ class Game {
       this.lstMove = move;
       this.moves.push(this.lstMove);
     } else if (!this.lstMove.equals(move)) {
-      this.moves.push(this.lstMove)
+      this.moves.push(move);
       this.lstMove = move;
     };
 
@@ -333,5 +276,20 @@ class Game {
     if (this.won) return;
 
     this.setStatus(GameStatus.CheatMode);
+  }
+  /*
+  * GameInfo format:
+  * difficulty$won$width$height$startDateTime$endDateTime$gameFields$moves
+  */
+  exportMoves() {
+    let gameInfo = `${this.gameDifficulty}$${this.won}$`;
+    gameInfo += `${this.width}$${this.height}$`;
+    gameInfo += `${this.startDateTime.toISOString()}$${this.endDateTime.toISOString()}$`;
+    gameInfo += `${this.fields.map(field => field.value).join("")}$`;
+
+    const movesList = this.moves.map(move => move.export());
+    const movesJoined = movesList.join("|");
+
+    return gameInfo+movesJoined;
   }
 }

@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- development version, includes helpful console warnings -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script> -->
+    <script src="vendor/vue.min.js"></script>
 
     <link rel="stylesheet" href="style.css">
     <script defer src="utils.js"></script>
+    <script defer src="field.js"></script>
+    <script defer src="move.js"></script>
     <script defer src="game.js"></script>
     <script defer src="main.js"></script>
     <title>Minesweeper</title>
@@ -17,11 +20,13 @@
 <body>
   <div id="app">
     <h1>Minesweeper</h1>
-    <!-- <div class="movesList">
+    <div class="movesList">
       <div v-for="move in game.moves" class="move">
+        <!-- {{ move.display() }} -->
         {{ move.display() }}
       </div>
-    </div> -->
+      <input type="button" value="Export Moves" v-on:click="onExportMoves()">
+    </div>
 
     <div class="stats">
       <span><b>GameStatus:</b> {{ gameStatus }}</span>
@@ -32,7 +37,8 @@
     <div v-if="game" class="boxes unselectable">
       <div v-for="h in game.height" class="row">
         <div 
-          v-for="w in game.width" 
+          v-for="w in game.width"
+          v-bind:title=`${w}-${h}`
           class="box"
           v-bind:class="{
             covered: game.getField(h,w).covered,
@@ -48,10 +54,10 @@
 
     <footer>
       <div class="instructions">
-        <h3>Commands:</h3>
+        <h2>Commands</h2>
         <span><b>Left Click</b>: uncover box / uncover adjacent boxes</span>
         <span><b>Right Click</b>: flag box</span>
-        <span><b>Ctrl + z</b>: cover all bombs</span>
+        <!-- <span><b>Ctrl + z</b>: cover all bombs</span> -->
       </div>
       <div class="controls">
         <select v-model="difficulty" v-on:change="onChangeDifficulty($event)">

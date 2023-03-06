@@ -1,4 +1,4 @@
-document.oncontextmenu = function() {
+document.oncontextmenu = function () {
   return false;
 }
 
@@ -6,9 +6,10 @@ const app = new Vue({
   el: '#app',
   data: {
     game: null,
+    gameField: [],
 
     playTime: 0,
-    
+
     gameStatus: "xxxxxx",
     difficulty: "expert",
     difficulties: [
@@ -53,20 +54,16 @@ const app = new Vue({
       let hours = Math.floor(minutes / 60);
       seconds = seconds % 60;
       minutes = minutes % 60;
-      return `${
-        hours.toString().padStart(2, '0')
-      }:${
-        minutes.toString().padStart(2, '0')
-      }:${
-        seconds.toString().padStart(2, '0')
-      }.${
-        milliseconds.toString().slice(0, 3).padStart(3, '0')
-      }`;
+      return `${hours.toString().padStart(2, '0')
+        }:${minutes.toString().padStart(2, '0')
+        }:${seconds.toString().padStart(2, '0')
+        }.${milliseconds.toString().slice(0, 3).padStart(3, '0')
+        }`;
     },
 
     onChangeDifficulty(e) {
       let difficulty = e.target.value;
-      
+
       console.log("main.onChangeDifficulty: " + difficulty);
       this.createGame(GameDifficulty[difficulty]);
     },
@@ -80,7 +77,7 @@ const app = new Vue({
         this.game.stop();
         this.game = null;
       }
-      
+
       const listeners = [
         this.onGameStart,
         this.onGameWon,
@@ -114,5 +111,9 @@ const app = new Vue({
         }
       });
     },
+    onExportMoves() {
+      console.log(this.game.exportMoves());
+      console.log(this.game.moves.map(move => move.export()));
+    }
   }
 })
