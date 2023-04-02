@@ -207,7 +207,10 @@ class Game {
   }
   onFieldRightClick(field) {
     if (this.isEnded()) return;
-    if (!field.covered) return;
+    if (!field.covered) {
+      this.onFieldClick(field);
+      return;
+    };
     
     this.moves.push(new Move(MoveType.Flag, field));
     field.flagged = !field.flagged;
