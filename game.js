@@ -277,19 +277,16 @@ class Game {
 
     this.setStatus(GameStatus.CheatMode);
   }
-  /*
-  * GameInfo format:
-  * difficulty$won$width$height$startDateTime$endDateTime$gameFields$moves
-  */
   exportMoves() {
-    let gameInfo = `${this.gameDifficulty}$${this.won}$`;
-    gameInfo += `${this.width}$${this.height}$`;
-    gameInfo += `${this.startDateTime.toISOString()}$${this.endDateTime.toISOString()}$`;
-    gameInfo += `${this.fields.map(field => field.value).join("")}$`;
-
     const movesList = this.moves.map(move => move.export());
     const movesJoined = movesList.join("|");
 
-    return gameInfo+movesJoined;
+    return movesJoined;
+  }
+  exportMovesCompact() {
+    const movesList = this.moves.map(move => move.exportCompact(this.startDateTime));
+    const movesJoined = movesList.join("|");
+
+    return movesJoined;
   }
 }

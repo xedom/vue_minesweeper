@@ -21,7 +21,23 @@ class Move {
     return this.moveType === move.moveType
       && this.clickedField.id === move.clickedField.id;
   }
-  export(startTime) {
+  export() {
+    const time = this.time.toISOString();
+    const field = this.clickedField;
+    const symbolMoveType = {
+      'Uncover': 'u',
+      'UncoverAdjacent': 'a',
+      'Flag': 'f',
+    }[this.moveType];
+
+    const exportString = `${time}|${symbolMoveType}|${field.x}|${field.y}`;
+    const exportAsciis = exportString.split('').map(c => c.charCodeAt(0));
+    const exportBase64 = exportAsciis.map(ascii => convert(ascii, 64));
+    const exportConverted = exportBase64.join('')
+    // return convert(decNum, base)(`${time} | ${symbolMoveType} | ${field.x} | ${field.y}`)
+    return exportConverted;
+  }
+  exportCompact(startTime) {
     const timeDiff = this.time - startTime;
     const field = this.clickedField;
     const symbolMoveType = {

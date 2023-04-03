@@ -112,8 +112,10 @@ const app = new Vue({
       });
     },
     onExportMoves() {
-      console.log(this.game.exportMoves());
-      console.log(this.game.moves.map(move => move.export()));
+      console.log(this.game.exportMoves())
+      console.log(this.game.moves.map(move => move.export()))
+      console.log(this.game.exportMovesCompact())
+      console.log(this.game.moves.map(move => move.exportCompact(this.game.startDateTime)))
     }
   }
 })
