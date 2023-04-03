@@ -23,7 +23,7 @@
     <div class="movesList">
       <div v-for="move in game.moves" class="move">
         <!-- {{ move.display() }} -->
-        {{ move.display() }}
+        {{ move.export() }}
       </div>
       <input type="button" value="Export Moves" v-on:click="onExportMoves()">
     </div>
@@ -57,7 +57,7 @@
         <h2>Commands</h2>
         <span><b>Left Click</b>: uncover box / uncover adjacent boxes</span>
         <span><b>Right Click</b>: flag box</span>
-        <!-- <span><b>Ctrl + z</b>: cover all bombs</span> -->
+        <span><b>Ctrl + z</b>: cover all bombs</span>
       </div>
       <div class="controls">
         <select v-model="difficulty" v-on:change="onChangeDifficulty($event)">
