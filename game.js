@@ -39,6 +39,9 @@ class Game {
     this.onGameTimeChange(this.time);
     this.onGameDifficultyChange(this.gameDifficulty);
   }
+  /**
+   * Creates empty fields
+   */
   createEmptyFields() {
     this.fields = [];
     for (let y = 0; y < this.height; y++) {
@@ -48,10 +51,22 @@ class Game {
       }
     }
   }
+  /**
+   * Populates fields with bombs and numbers
+   * 
+   * @param {Field} clickedField - Field that was clicked to start the game
+   * @returns {void}
+  */
   populateFields(clickedField) {
     this.generateBombs(clickedField.id);
     this.calculateNumbers();
   }
+  /**
+   * Generates bombs randomly on the board
+   * 
+   * @param {Field} clickedField - Field that was clicked to start the game
+   * @returns {void}
+  */
   generateBombs(clickedField) {
     const safeZone = this.getAdjacentFieldsID(clickedField, this.width, this.height);
     const bombs = [];
